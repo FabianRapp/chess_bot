@@ -1,0 +1,10 @@
+parent
+child
+*.a
+*.o
+*.out
+a
+b
+c
+d
+e
