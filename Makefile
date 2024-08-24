@@ -1,5 +1,5 @@
 CC=cc
-CFLAG=-fsanitize=address -g
+CFLAG=-fsanitize=thread -g
 SRC = main.c
 OBJ = $(SRC:%.c=%.o)
 NAME = chess
@@ -17,9 +17,9 @@ $(LIBFT):
 	cp ./libft/libft.a $(LIBFT)
 
 clean:
-	rm -f $(OBJ_PARENT) $(OBJ_CHILD)
+	rm -f $(OBJ)
 	cd libft && make clean
 
 fclean: clean
-	rm -f $(LIBFT) $(CHILD) $(PARENT)
+	rm -f $(LIBFT) $(NAME)
 	cd libft && make fclean

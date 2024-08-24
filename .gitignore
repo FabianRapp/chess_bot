@@ -1,6 +1,7 @@
 parent
 child
 compile_commands.json
+chess
 .cache/*
 *.a
 *.o

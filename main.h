@@ -9,6 +9,7 @@
 */
 
 #include <stdio.h>
+#include <sys/param.h>
 #include <assert.h>
 #include "./libft/libft.h"
 #include <unistd.h>
@@ -60,9 +61,9 @@ typedef enum e_piece
 
 #define KING_VECS		{{1, 0}, {0, 1}, {-1, 0}, {0, -1}, {1, 1}, {-1, -1}, {1, -1}, {-1, 1}}
 #define QUEEN_VECS		KING_VECS
-#define BISHOP_VECS		{{0, 1}, {-1, 0}, {0, -1}, {1, 0}}
-#define KNIGHT_VECS		{{}, }
-#define ROOK_VECS		{{1, 1}, {-1, 1}, {-1, -1}, {1, -1}}
+#define BISHOP_VECS		{{1, 1}, {-1, 1}, {-1, -1}, {1, -1}}
+#define KNIGHT_VECS		{{-2, -1}, {-2, 1}, {2, -1}, {2, 1}, {-1, -2}, {1, -2}, {-1, 2}, {1, 2}}
+#define ROOK_VECS		{{0, 1}, {-1, 0}, {0, -1}, {1, 0}}
 #define PAWN_VECS_WHITE	{{},}
 #define PAWN_VECS_BLACK {{},}
 
@@ -74,10 +75,10 @@ typedef struct s_game t_game;
 // fom field xo/yo to field xn/yn
 typedef struct s_move
 {
-	uint8_t	xo;
-	uint8_t	yo;
-	uint8_t	xn;
-	uint8_t	yn;
+	int8_t	xo;
+	int8_t	yo;
+	int8_t	xn;
+	int8_t	yn;
 }	t_move;
 //typedef struct s_move
 //{

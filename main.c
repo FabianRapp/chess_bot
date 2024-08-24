@@ -17,6 +17,27 @@
 //	PAWN_W = 12,
 //}	t_piece;
 
+char *piece_to_str(t_piece piece)
+{
+	switch (piece)
+	{
+		case EMPTY: return "EMPTY";
+		case KING_B: return "KING_B";
+		case KING_W: return "KING_W";
+		case QUEEN_B: return "QUEEN_B";
+		case QUEEN_W: return "QUEEN_W";
+		case BISHOP_B: return "BISHOP_B";
+		case BISHOP_W: return "BISHOP_W";
+		case KNIGHT_B: return "KNIGHT_B";
+		case KNIGHT_W: return "KNIGHT_W";
+		case ROOK_B: return "ROOK_B";
+		case ROOK_W: return "ROOK_W";
+		case PAWN_B: return "PAWN_B";
+		case PAWN_W: return "PAWN_W";
+		default: ERROR("uknown piece");
+	}
+}
+
 void	print_board(t_game *game)
 {
 	printf("  |");
@@ -58,9 +79,21 @@ void	print_board(t_game *game)
 	usleep(2000000);
 }
 
-void	player_cleanup(t_player *data)
+void	player_cleanup(t_player *player)
 {
 	//cleanup ..
+	if (player->color == WHITE)
+	{
+		printf("cleanup WHITE\n");
+		player->game->turn = BLACK;
+	}
+	else
+	{
+		printf("cleanup BLACKWHITE\n");
+		player->game->turn = WHITE;
+	}
+	pthread_cond_broadcast(&player->game->turn_over);
+	pthread_mutex_unlock(&player->game->mutex);
 	pthread_exit(NULL);
 }
 
@@ -77,9 +110,10 @@ bool	bounds_check(t_move move)
 
 bool	color_check(t_move move, t_game *game)
 {
-	return (!((game->board[move.yo][move.xo] % 2)
-				== (game->board[move.yn][move.xn] % 2))
-			);
+	bool	color_check = (game->board[move.yo][move.xo] % 2)
+				!= (game->board[move.yn][move.xn] % 2);
+	bool	empty_check = !game->board[move.yn][move.xn];
+	return (color_check || empty_check);
 }
 
 t_move	handle_in_check(t_player *player)
@@ -120,6 +154,9 @@ void	add_line_moves(t_player *player, t_move move, t_move **moves, size_t *moves
 {
 	int	direct_x = move.xn;
 	int	direct_y = move.yn;
+	assert(MAX(direct_x, direct_y) <= 1 && MIN(direct_x, direct_y) >= -1);
+	move.xn = move.xo;
+	move.yn = move.yo;
 	for (size_t i = 1; i <= step_count; i++)
 	{
 		move.xn += direct_x;
@@ -140,7 +177,7 @@ t_move	get_rdm_move(t_player *player)
 	t_move move = {0};
 	if (in_check(player))
 		return (handle_in_check(player));
-	t_move	*moves;
+	t_move	*moves = NULL;
 	size_t	moves_count = 0;
 
 	moves = dyn_arr_init(sizeof(t_move), 1);
@@ -148,28 +185,45 @@ t_move	get_rdm_move(t_player *player)
 	{
 		for (uint8_t x = 0; x < WIDTH; x++)
 		{
-			if (player->game->board[y][x] && player->game->board[y][x] % 2 == player->color)
+			if (player->game->board[y][x] != EMPTY
+					&& player->game->board[y][x] % 2 == player->color)
 			{
 				move.xo = x;
 				move.yo = y;
 				t_move tmp = move;
 				t_uncolored_piece piece = (player->game->board[y][x] - 1) / 2;
-				switch (piece)
+				switch ((t_uncolored_piece)piece)
 				{
-					case (EMPTY): {break ;}
-					case (KING || QUEEN):
+					case (KING):
 					{
 						const int vecs[8][2] = KING_VECS;
 						for (uint8_t i = 0; i < 8; i++)
 						{
-							move.xn = move.xo + vecs[i][0];
-							move.yn = move.yo + vecs[i][1];
+							move.xn = vecs[i][0];
+							move.yn = vecs[i][1];
 							if (piece == KING)
 								add_line_moves(player, move, &moves, &moves_count, 1);
 							else
 							{
 								for (int j = 1; j <= 7; j++)
-									add_line_moves(player, move, &moves, &moves_count, 1);
+									add_line_moves(player, move, &moves, &moves_count, j);
+							}
+						}
+						break ;
+					}
+					case (QUEEN):
+					{
+						const int vecs[8][2] = KING_VECS;
+						for (uint8_t i = 0; i < 8; i++)
+						{
+							move.xn = vecs[i][0];
+							move.yn = vecs[i][1];
+							if (piece == KING)
+								add_line_moves(player, move, &moves, &moves_count, 1);
+							else
+							{
+								for (int j = 1; j <= 7; j++)
+									add_line_moves(player, move, &moves, &moves_count, j);
 							}
 						}
 						break ;
@@ -179,15 +233,26 @@ t_move	get_rdm_move(t_player *player)
 						const int vecs[4][2] = BISHOP_VECS;
 						for (uint8_t i = 0; i < 4; i++)
 						{
-							move.xn = move.xo + vecs[i][0];
-							move.yn = move.yo + vecs[i][1];
+							move.xn = vecs[i][0];
+							move.yn = vecs[i][1];
 							for (int j = 1; j <= 7; j++)
-								add_line_moves(player, move, &moves, &moves_count, 1);
+								add_line_moves(player, move, &moves, &moves_count, j);
 						}
 						break ;
 					}
 					case (KNIGHT):
 					{
+						const int vecs[8][2] = KNIGHT_VECS;
+						for (uint8_t i = 0; i < 8; i++)
+						{
+							move.xn = move.xo + vecs[i][0];
+							move.yn = move.yo + vecs[i][1];
+							if (bounds_check(move) && color_check(move, player->game)
+								&& !endagers_kings(move, player))
+							{
+								dyn_arr_add_save((void **)&moves, &move, moves_count++);
+							}
+						}
 						break ;
 					}
 					case (ROOK):
@@ -195,10 +260,10 @@ t_move	get_rdm_move(t_player *player)
 						const int vecs[4][2] = ROOK_VECS;
 						for (uint8_t i = 0; i < 4; i++)
 						{
-							move.xn = move.xo + vecs[i][0];
-							move.yn = move.yo + vecs[i][1];
+							move.xn = vecs[i][0];
+							move.yn = vecs[i][1];
 							for (int j = 1; j <= 7; j++)
-								add_line_moves(player, move, &moves, &moves_count, 1);
+								add_line_moves(player, move, &moves, &moves_count, j);
 						}
 						break ;
 					}
@@ -225,11 +290,20 @@ t_move	get_rdm_move(t_player *player)
 						}
 						move.xn += 2;
 						if (bounds_check(move)
+							&& player->game->board[move.yn][move.xn]
 							&& (player->game->board[move.yo][move.xo] % 2)
 								!= (player->game->board[move.yn][move.xn] % 2)
 						)
 						{
 							dyn_arr_add_save((void **)&moves, &move, moves_count++);
+						}
+						if ((player->color == BLACK && move.yo == 1)
+							|| (player->color == WHITE && move.yo == 6))
+						{
+							move.xn = move.xo;
+							move.yn += direct_y;
+							if (!player->game->board[move.yn][move.xo])
+								dyn_arr_add_save((void **)&moves, &move, moves_count++);
 						}
 						break ;
 					}
@@ -243,9 +317,12 @@ t_move	get_rdm_move(t_player *player)
 			}
 		}
 	}
+	bzero(&move, sizeof move);
 	if (!moves_count)
 	{
 		// signal draw
+		printf("draw!");
+		//return (move);
 		player_cleanup(player);
 		__builtin_unreachable();
 	}
@@ -256,7 +333,10 @@ t_move	get_rdm_move(t_player *player)
 
 void	execute_move(t_player *player, t_move move)
 {
-	printf("moving %d/%d to %d/%d (x/y)\n", move.xo, move.yo, move.xn, move.yn);
+	printf("moving %d/%d(%s) to %d/%d(%s) (x/y)\n", move.xo, move.yo,
+			piece_to_str(player->game->board[move.yo][move.xo]),
+			move.xn, move.yn,
+			piece_to_str(player->game->board[move.yn][move.xn]));
 	player->game->board[move.yn][move.xn] =
 		player->game->board[move.yo][move.xo];
 	player->game->board[move.yo][move.xo] = 0;
