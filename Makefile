@@ -1,22 +1,13 @@
 CC=cc
 CFLAG=-fsanitize=address -g
-SRC_PARENT = parent.c
-OBJ_PARENT = $(SRC_PARENT:%.c=%.o)
-PARENT = parent
-
-SRC_CHILD = child.c
-OBJ_CHILD = $(SRC_CHILD:%.c=%.o)
-CHILD = child
+SRC = main.c
+OBJ = $(SRC:%.c=%.o)
+NAME = chess
 
 LIBFT = libft.a
 
-all: $(CHILD) $(PARENT)
-
-$(PARENT): $(LIBFT) $(OBJ_PARENT)
-	$(CC) $(CFLAGS) $(OBJ_PARENT) -o $(PARENT)
-
-$(CHILD): $(LIBFT) $(OBJ_CHILD)
-	$(CC) $(CFLAGS) $(OBJ_CHILD) -o $(CHILD)
+all: $(LIBFT) $(OBJ)
+	$(CC) $(CFLAGS) $(OBJ) $(LIBFT) -o $(NAME)
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -27,6 +18,8 @@ $(LIBFT):
 
 clean:
 	rm -f $(OBJ_PARENT) $(OBJ_CHILD)
+	cd libft && make clean
 
 fclean: clean
 	rm -f $(LIBFT) $(CHILD) $(PARENT)
+	cd libft && make fclean
