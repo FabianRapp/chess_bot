@@ -3,11 +3,10 @@
 void	place_new_piece(t_game *game, uint8_t x, uint8_t y, t_piece piece)
 {
 	t_color color = piece_color(piece);
-	t_uncolored_piece uncol_piece = uncolor_piece(piece);
 
 	game->positions[color][game->piece_count[color]].x = x;
 	game->positions[color][game->piece_count[color]].y = y;
-	game->positions[color][game->piece_count[color]].type = uncol_piece;
+	game->positions[color][game->piece_count[color]].type = piece;
 	game->piece_count[color]++;
 	game->board[y][x] = piece;
 }

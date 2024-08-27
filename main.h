@@ -3,7 +3,6 @@
 
 /* Missing moves:
 * pawn promotion
-* knight movement
 * en passnt
 * casteling
 */
@@ -29,6 +28,13 @@
 
 #define ERROR(str) do {fprintf(stderr, "error in %s at %d: %s\n", __FILE__,\
 							__LINE__, str);exit(1);} while(0)
+
+#ifdef NO_DEBUG
+# define ASSUME(cond) do { if (!cond){__builtin_unreachable();}} while(0)
+#else // NO_DEBUG
+# define ASSUME(cond) assert(cond)
+#endif//NO_DEBUG
+
 
 // use % 2 to determine the color
 // use (t_piece var -1) / 2 to match t_uncolored_piece to t_piece
@@ -92,9 +98,9 @@ typedef struct s_move
 //	uint8_t	yn : 3;
 //}	t_move;
 
-typedef struct s_thread
+typedef struct s_player
 {
-	uint8_t		color	;
+	t_color		color;
 	t_game		*game;
 	pthread_t	thread;
 }	t_player;
@@ -103,7 +109,7 @@ typedef struct s_position
 {
 	uint8_t				x;
 	uint8_t				y;
-	t_uncolored_piece	type;
+	t_piece				type;
 }	t_position;
 
 typedef struct s_game
@@ -127,14 +133,17 @@ typedef struct s_manager
 
 // main.c
 void	*game_loop(void *player_data);
+void	execute_move(t_game *game, t_move move, bool print);
 
 // utils1.c
 t_color				piece_color(t_piece piece);
 t_uncolored_piece	uncolor_piece(t_piece piece);
+t_color				inverse_color(t_color color);
 
 //debug.c
 char	*piece_to_str(t_piece piece);
 void	print_board(t_game *game);
+char	*color_to_str(t_color color);
 
 // init.c
 int	launch_game(t_manager *manager, size_t game_index);

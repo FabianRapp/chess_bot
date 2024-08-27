@@ -14,7 +14,6 @@ int	launch_game(t_manager *manager, size_t game_index)
 	return (1);
 }
 
-
 int	init(t_manager *manager)
 {
 	errno = 0;

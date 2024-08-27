@@ -1,5 +1,15 @@
 #include "main.h"
 
+char	*color_to_str(t_color color)
+{
+	switch (color)
+	{
+		case BLACK: return "BLACK";
+		case WHITE: return "WHITE";
+		default: return "INVALID COLOR";
+	}
+}
+
 char *piece_to_str(t_piece piece)
 {
 	switch (piece)
@@ -20,9 +30,6 @@ char *piece_to_str(t_piece piece)
 		default: ERROR("uknown piece");
 	}
 }
-
-
-
 
 void	print_board(t_game *game)
 {
