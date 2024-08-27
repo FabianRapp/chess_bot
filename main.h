@@ -67,8 +67,12 @@ typedef enum e_piece
 #define PAWN_VECS_WHITE	{{},}
 #define PAWN_VECS_BLACK {{},}
 
-#define BLACK 1
-#define WHITE 0
+typedef enum e_color
+{
+	WHITE = 0,
+	BLACK = 1,
+	COLOR_COUNT = 2,
+}	t_color;
 
 typedef struct s_game t_game;
 
@@ -95,9 +99,18 @@ typedef struct s_thread
 	pthread_t	thread;
 }	t_player;
 
+typedef struct s_position
+{
+	uint8_t				x;
+	uint8_t				y;
+	t_uncolored_piece	type;
+}	t_position;
+
 typedef struct s_game
 {
 	t_piece			board[HEIGHT][WIDTH];
+	t_position		positions[COLOR_COUNT][16];
+	uint8_t			piece_count[COLOR_COUNT];
 	pthread_cond_t	turn_over;
 	pthread_mutex_t	mutex;
 	bool			check;
@@ -111,5 +124,24 @@ typedef struct s_manager
 	t_player	*black_players;
 	t_player	*white_players;
 }	t_manager;
+
+// main.c
+void	*game_loop(void *player_data);
+
+// utils1.c
+t_color				piece_color(t_piece piece);
+t_uncolored_piece	uncolor_piece(t_piece piece);
+
+//debug.c
+char	*piece_to_str(t_piece piece);
+void	print_board(t_game *game);
+
+// init.c
+int	launch_game(t_manager *manager, size_t game_index);
+int	init(t_manager *manager);
+
+// reset.c
+void	place_new_piece(t_game *game, uint8_t x, uint8_t y, t_piece piece);
+void	reset_game(t_game *game);
 
 #endif

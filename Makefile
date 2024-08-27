@@ -1,6 +1,12 @@
 CC=cc
 CFLAG=-fsanitize=thread -g
-SRC = main.c
+
+SRC = main.c \
+	utils1.c \
+	init.c \
+	debug.c \
+	reset.c
+
 OBJ = $(SRC:%.c=%.o)
 NAME = chess
 
@@ -23,3 +29,5 @@ clean:
 fclean: clean
 	rm -f $(LIBFT) $(NAME)
 	cd libft && make fclean
+
+re: fclean all
