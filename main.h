@@ -144,6 +144,7 @@ t_color				inverse_color(t_color color);
 char	*piece_to_str(t_piece piece);
 void	print_board(t_game *game);
 char	*color_to_str(t_color color);
+void	print_move(t_move move, t_game *game);
 
 // init.c
 int	launch_game(t_manager *manager, size_t game_index);

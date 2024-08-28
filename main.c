@@ -1,5 +1,7 @@
 #include "main.h"
 
+int iters = 0;
+
 void	player_cleanup(t_player *player)
 {
 	//cleanup ..
@@ -53,166 +55,50 @@ t_move	handle_in_check(t_player *player)
 }
 
 //todo: en passnt
+//todo: castle
 //todo: refactor
 bool	in_check(t_player *player)
 {
 	t_color	color = player->color;
 	t_game	*game = player->game;
 	t_position	king_pos = game->positions[color][0];
+	const int	directions[][4][2] = {{{1, 0}, {0, 1}, {-1, 0}, {0, -1}}, {{1 , 1}, {-1, -1}, {1, -1}, {-1, 1}}};
+	const t_uncolored_piece	pieces[][3] = {{KING, QUEEN, ROOK}, {KING, QUEEN, BISHOP}, };
 
-	ASSUME(king_pos.type == KING_W || king_pos.type == KING_B);
-	int k = 0;
-	for (int x = king_pos.x - 1; x >= 0; x--)
+	for (int i = 0; i < sizeof pieces / 3 / sizeof pieces[0][0]; i ++)
 	{
-		t_piece	piece_in_sight = game->board[king_pos.y][x];
-		if (piece_in_sight)
+		t_uncolored_piece cur_cmp[3];
+	
+		memcpy(cur_cmp, pieces[i], sizeof cur_cmp);
+		for (int direction = 0; direction < 4; direction++)
 		{
-			t_uncolored_piece uncol_sight = uncolor_piece(piece_in_sight);
-			if (color != piece_color(piece_in_sight)
-				&& ((uncol_sight == KING && !k) || uncol_sight == QUEEN
-					|| uncol_sight == ROOK))
+			int	direct_x = directions[i][direction][0];
+			int	direct_y = directions[i][direction][1];
+			int	steps = 0;
+			for (int x = king_pos.x + direct_x, y = king_pos.y + direct_y;
+					x >= 0 && x < WIDTH && y >= 0 && y < HEIGHT;
+					x += direct_x, y += direct_y
+				)
 			{
-				printf("1\n");
-				printf("%s; x: %d; y: %d\n", piece_to_str(piece_in_sight), x, king_pos.y);
-				return (true);
+				steps++;
+				t_piece	piece_in_sight = game->board[y][x];
+				if (!piece_in_sight)
+					continue ;
+				if (color == piece_color(piece_in_sight))
+					break ;
+				t_uncolored_piece uncol_sight = uncolor_piece(piece_in_sight);
+				for (int j = 0; j < 3; j++)
+				{
+					if (uncol_sight == cur_cmp[j] && (uncol_sight != KING || steps == 1))
+					{
+						return (true);
+					}
+				}
+				break ;
 			}
-			break ;
 		}
-		k++;
 	}
-	k = 0;
-	for (int x = king_pos.x + 1; x < WIDTH; x++)
-	{
-		t_piece	piece_in_sight = game->board[king_pos.y][x];
-		if (piece_in_sight)
-		{
-			t_uncolored_piece uncol_sight = uncolor_piece(piece_in_sight);
-			if (color != piece_color(piece_in_sight)
-				&& ((uncol_sight == KING && !k) || uncol_sight == QUEEN
-					|| uncol_sight == ROOK))
-			{
-				printf("2\n");
-				printf("%s; x: %d; y: %d\n", piece_to_str(piece_in_sight), x, king_pos.y);
-				return (true);
-			}
-			break ;
-		}
-		k++;
-	}
-	k = 0;
-	for (int y = king_pos.y - 1; y >= 0; y--)
-	{
-		t_piece	piece_in_sight = game->board[y][king_pos.x];
-		if (piece_in_sight)
-		{
-			t_uncolored_piece uncol_sight = uncolor_piece(piece_in_sight);
-			if (color != piece_color(piece_in_sight)
-				&& ((uncol_sight == KING && !k) || uncol_sight == QUEEN
-					|| uncol_sight == ROOK))
-			{
-				printf("3\n");
-				printf("%s; x: %d; y: %d\n", piece_to_str(piece_in_sight), king_pos.x, y);
-				return (true);
-			}
-			break ;
-		}
-		k++;
-	}
-	k = 0;
-	for (int y = king_pos.y + 1; y < HEIGHT; y++)
-	{
-		t_piece	piece_in_sight = game->board[y][king_pos.x];
-		if (piece_in_sight)
-		{
-			t_uncolored_piece uncol_sight = uncolor_piece(piece_in_sight);
-			if (color != piece_color(piece_in_sight)
-				&& ((uncol_sight == KING && !k) || uncol_sight == QUEEN
-					|| uncol_sight == ROOK))
-			{
-				printf("4\n");
-				printf("%s; x: %d; y: %d\n", piece_to_str(piece_in_sight), king_pos.x, y);
-				return (true);
-			}
-			break ;
-		}
-		k++;
-	}
-	k = 0;
-	for (int x= king_pos.x - 1, y = king_pos.y - 1; x>= 0 && y >= 0; x--, y--)
-	{
-		t_piece	piece_in_sight = game->board[y][x];
-		if (piece_in_sight)
-		{
-			t_uncolored_piece uncol_sight = uncolor_piece(piece_in_sight);
-			if (color != piece_color(piece_in_sight)
-				&& ((uncol_sight == KING && !k) || uncol_sight == QUEEN
-					|| uncol_sight == BISHOP))
-			{
-				printf("3\n");
-				printf("%s; x: %d; y: %d\n", piece_to_str(piece_in_sight), x, y);
-				return (true);
-			}
-			break ;
-		}
-		k++;
-	}
-	k = 0;
-	for (int x= king_pos.x + 1, y = king_pos.y + 1; x < WIDTH && y < HEIGHT; x++, y++)
-	{
-		t_piece	piece_in_sight = game->board[y][x];
-		if (piece_in_sight)
-		{
-			t_uncolored_piece uncol_sight = uncolor_piece(piece_in_sight);
-			if (color != piece_color(piece_in_sight)
-				&& ((uncol_sight == KING && !k) || uncol_sight == QUEEN
-					|| uncol_sight == BISHOP))
-			{
-				printf("3\n");
-				printf("%s; x: %d; y: %d\n", piece_to_str(piece_in_sight), x, y);
-				return (true);
-			}
-			break ;
-		}
-		k++;
-	}
-	k = 0;
-	for (int x= king_pos.x - 1, y = king_pos.y + 1; x>= 0 && y < HEIGHT; x--, y++)
-	{
-		t_piece	piece_in_sight = game->board[y][x];
-		if (piece_in_sight)
-		{
-			t_uncolored_piece uncol_sight = uncolor_piece(piece_in_sight);
-			if (color != piece_color(piece_in_sight)
-				&& ((uncol_sight == KING && !k) || uncol_sight == QUEEN
-					|| uncol_sight == BISHOP))
-			{
-				printf("3\n");
-				printf("%s; x: %d; y: %d\n", piece_to_str(piece_in_sight), x, y);
-				return (true);
-			}
-			break ;
-		}
-		k++;
-	}
-	k = 0;
-	for (int x= king_pos.x + 1, y = king_pos.y - 1; x < WIDTH && y >= 0; x++, y--)
-	{
-		t_piece	piece_in_sight = game->board[y][x];
-		if (piece_in_sight)
-		{
-			t_uncolored_piece uncol_sight = uncolor_piece(piece_in_sight);
-			if (color != piece_color(piece_in_sight)
-				&& ((uncol_sight == KING && !k) || uncol_sight == QUEEN
-					|| uncol_sight == BISHOP))
-			{
-				printf("3\n");
-				printf("%s; x: %d; y: %d\n", piece_to_str(piece_in_sight), x, y);
-				return (true);
-			}
-			break ;
-		}
-		k++;
-	}
+
 	// check knights
 	const int vecs[8][2] = KNIGHT_VECS;
 	t_move	move;
@@ -228,8 +114,6 @@ bool	in_check(t_player *player)
 			if (piece && piece_color(piece) != color
 					&& uncolor_piece(piece) == KNIGHT)
 			{
-				printf("5\n");
-				printf("%s; x: %d; y: %d\n", piece_to_str(piece), move.xn, move.yn);
 				return (true);
 			}
 		}
@@ -247,10 +131,8 @@ bool	in_check(t_player *player)
 		if (pawn_col >= 0)
 		{
 			t_piece	potential_pawn = game->board[pawn_row][pawn_col];
-			if (potential_pawn && color != piece_color(potential_pawn))
+			if (potential_pawn && color != piece_color(potential_pawn) && uncolor_piece(potential_pawn) == PAWN)
 			{
-				printf("6\n");
-				printf("%s; x: %d; y: %d\n", piece_to_str(potential_pawn), pawn_col, pawn_row);
 				return (true);
 			}
 		}
@@ -258,10 +140,8 @@ bool	in_check(t_player *player)
 		if (pawn_col < WIDTH)
 		{
 			t_piece	potential_pawn = game->board[pawn_row][pawn_col];
-			if (potential_pawn && color != piece_color(potential_pawn))
+			if (potential_pawn && color != piece_color(potential_pawn) && uncolor_piece(potential_pawn) == PAWN)
 			{
-				printf("7\n");
-				printf("%s; x: %d; y: %d\n", piece_to_str(potential_pawn), pawn_col, pawn_row);
 				return (true);
 			}
 		}
@@ -275,21 +155,10 @@ bool	endangers_king(t_move move, t_player *player)
 	t_player	player_cpy = *player;
 	player_cpy.game = &game_cpy;
 	execute_move(&game_cpy, move, false);
-	printf("checking move xo: %d; yo: %d-> xn: %d; yn: %d\n", move.xo, move.yo, move.xn, move.yn);
 	if (in_check(&player_cpy))
 	{
-		printf("endangers king:\n");
-		//t_game		game_cpy = *player->game;
-		//t_player	player_cpy = *player;
-		//player_cpy.game = &game_cpy;
-		//execute_move(&game_cpy, move, true);
-		print_board(player->game);
-		printf("->\n");
-		print_board(&game_cpy);
-		printf("-------------------------\n");
 		return (true);
 	}
-	printf("does not endanger king\n");
 	return (false);
 }
 
@@ -336,8 +205,8 @@ void	add_queen_moves(t_player *player, t_move move, t_move **moves, size_t *move
 	{
 		move.xn = vecs[i][0];
 		move.yn = vecs[i][1];
-		for (int j = 1; j <= 7; j++)
-			add_line_moves(player, move, moves, moves_count, j);
+		//for (int j = 1; j <= 7; j++)
+		add_line_moves(player, move, moves, moves_count, 7);
 	}
 }
 
@@ -348,8 +217,8 @@ void	add_bishop_moves(t_player *player, t_move move, t_move **moves, size_t *mov
 	{
 		move.xn = vecs[i][0];
 		move.yn = vecs[i][1];
-		for (int j = 1; j <= 7; j++)
-			add_line_moves(player, move, moves, moves_count, j);
+		//for (int j = 1; j <= 7; j++)
+		add_line_moves(player, move, moves, moves_count, 7);
 	}
 }
 
@@ -376,48 +245,55 @@ void	add_rook_moves(t_player *player, t_move move, t_move **moves, size_t *moves
 	{
 		move.xn = vecs[i][0];
 		move.yn = vecs[i][1];
-		for (int j = 1; j <= 7; j++)
-			add_line_moves(player, move, moves, moves_count, j);
+		//for (int j = 1; j <= 7; j++)
+		add_line_moves(player, move, moves, moves_count, 7);
 	}
 }
 
 //todo: add pawn promation and en passnt
+//todo: refactor
 void	add_pawn_moves(t_player *player, t_move move, t_move **moves, size_t *moves_count)
 {
 	move.xn = move.xo;
+	move.yn = move.yo;
+
+	// move 1 vertical
 	int	direct_y = -1;
 	if (player->color == BLACK)
 		direct_y = 1;
-	move.yn = move.yo + direct_y;
+	move.yn += direct_y;
 	if (bounds_check(move)
 			&& !player->game->board[move.yn][move.xo]
 			&& !endangers_king(move, player))
 	{
 		dyn_arr_add_save((void **)moves, &move, (*moves_count)++);
 	}
+	// take 1 vertical, 1 left
 	move.xn--;
 	if (bounds_check(move)
 		&& player->game->board[move.yn][move.xn]
-		&& player->color != piece_color(player->game->board[move.yn][move.xn]
-		&& !endangers_king(move, player))
+		&& player->color != piece_color(player->game->board[move.yn][move.xn])
+		&& !endangers_king(move, player)
 	)
 	{
 		dyn_arr_add_save((void **)moves, &move, (*moves_count)++);
 	}
+	// take 1 vertical, 1 right
 	move.xn += 2;
 	if (bounds_check(move)
 		&& player->game->board[move.yn][move.xn]
-		&& player->color != piece_color(player->game->board[move.yn][move.xn]
-		)//&& !endangers_king(move, player))
+		&& player->color != piece_color(player->game->board[move.yn][move.xn])
+		&& !endangers_king(move, player)
 	)
 	{
 		dyn_arr_add_save((void **)moves, &move, (*moves_count)++);
 	}
+	// move 2 vertical
+	move.xn = move.xo;
+	move.yn = move.yn + 2 * direct_y;
 	if ((player->color == BLACK && move.yo == 1)
 		|| (player->color == WHITE && move.yo == 6))
 	{
-		move.xn = move.xo;
-		move.yn += direct_y;
 		if (!player->game->board[move.yn][move.xo] && !endangers_king(move, player))
 		{
 			dyn_arr_add_save((void **)moves, &move, (*moves_count)++);
@@ -460,13 +336,13 @@ void	add_pieces_moves(t_position cur_position, t_player *player, t_move move, t_
 		}
 		case (PAWN):
 		{
-			//add_pawn_moves(player, move, moves, moves_count);
+			add_pawn_moves(player, move, moves, moves_count);
 			break ;
 		}
 		default:
 		{
 			printf("%d\n", piece);
-			ERROR("unknown piece");
+			ASSUME(0);
 		}
 		ASSUME(tmp.xo == move.xo && tmp.yo == move.yo);
 	}
@@ -478,11 +354,6 @@ void	get_all_possible_moves(t_player *player, t_move **ret_moves, size_t *ret_mo
 	const t_color	color = player->color;
 	const	uint8_t	piece_count = player->game->piece_count[color];
 	ASSUME(piece_count >= 0 && piece_count <= 16);
-	//if (in_check(player))
-	//{
-	//	handle_in_check(player);
-	//	return ;
-	//}
 	*ret_moves = dyn_arr_init(sizeof(t_move), 1);
 
 	for (uint8_t i = 0; i < piece_count; i++)
@@ -501,14 +372,20 @@ t_move	get_rdm_move(t_player *player)
 	t_move	*moves = NULL;
 	size_t	moves_count = 0;
 	get_all_possible_moves(player, &moves, &moves_count);
-	printf("possible moves: %lu\n", moves_count);
+	//debug logging------
+	for (int i = 0; i < moves_count; i++)
+	{
+		ASSUME(!player->game->board[moves[i].yn][moves[i].xn]
+			|| uncolor_piece(
+				player->game->board[moves[i].yn][moves[i].xn]) != KING);
+	}
+	//---------------
 	t_move	move = {0};
 	if (!moves_count)
 	{
 		if (in_check(player))
 		{
 			printf("player %s lost!\n", color_to_str(player->color));
-			exit(0);
 		}
 		else
 		{
@@ -559,14 +436,12 @@ void	execute_move(t_game *game, t_move move, bool print)
 		t_color	opp_color = inverse_color(color);
 		const uint8_t	postion_data_size =
 				sizeof game->positions[opp_color][0];
-		printf("xo: %d; yo: %d\n", move.xo, move.yo);
-		printf("xn: %d; yn: %d\n", move.xn, move.yn);
 		for (int i = 0; i < 16; i++)
 		{
-			printf("game->positions[opp_color][i] x: %d; y: %d\n", game->positions[opp_color][i].x, game->positions[opp_color][i].y);
 			if (game->positions[opp_color][i].x == move.xn
 				&& game->positions[opp_color][i].y == move.yn)
 			{
+				game->piece_count[opp_color]--;
 				uint8_t	shifts = 15 - i;
 				if (!shifts)
 					break ;
@@ -577,15 +452,8 @@ void	execute_move(t_game *game, t_move move, bool print)
 					);
 				break ;
 			}
-			if (!(i < game->piece_count[opp_color] - 1))
-			{
-				printf("i: %d; opp_color: %s; color: %s; opp_cnt: %d; cnt: %d\n", i,
-						color_to_str(opp_color), color_to_str(color), game->piece_count[opp_color], game->piece_count[color]);
-				print_board(game);
-				ASSUME(i < game->piece_count[opp_color] - 1);
-			}
+			ASSUME(i < game->piece_count[opp_color] - 1);
 		}
-		game->piece_count[opp_color]--;
 		bzero(game->positions[opp_color] + game->piece_count[opp_color],
 				postion_data_size);
 	}
@@ -609,13 +477,8 @@ void	*game_loop(void *player_data)
 		while (player->color != player->game->turn)
 			pthread_cond_wait(&player->game->turn_over, &player->game->mutex);
 		t_piece	king = player->game->positions[player->color][0].type;
-		if (king != KING_B && king != KING_W)
-		{
-			printf("%s lost his king!\n", color_to_str(player->color));
-			exit(0);
-			player_cleanup(player);
-		}
-		printf("%ss turn!\n", color_to_str(player->color));
+		ASSUME(king == KING_B || king == KING_W);
+		printf("%s's turn!\n", color_to_str(player->color));
 		t_move rdm_move = get_rdm_move(player);
 		execute_move(player->game, rdm_move, true);
 		print_board(player->game);
@@ -623,6 +486,11 @@ void	*game_loop(void *player_data)
 			player->game->turn = BLACK;
 		else
 			player->game->turn = WHITE;
+		if (iters++ > 5000)
+		{
+			printf("reached iter cap\n");
+			exit(0);
+		}
 		pthread_cond_broadcast(&player->game->turn_over);
 		pthread_mutex_unlock(&player->game->mutex);
 	}

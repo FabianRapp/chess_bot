@@ -1,5 +1,26 @@
 #include "main.h"
 
+void	print_move(t_move move, t_game *game)
+{
+	if (game->board[move.yn][move.xn])
+	{
+		printf("%s (x: %d/y: %d) takes %s (x: %d/y: %d)\n",
+				piece_to_str(game->board[move.yo][move.xo]),
+				move.xo, move.yo,
+				piece_to_str(game->board[move.yn][move.xn]),
+				move.xn, move.yn
+		);
+	}
+	else
+	{
+		printf("%s (x: %d/y: %d) moves to  x: %d/y: %d\n", 
+				piece_to_str(game->board[move.yo][move.xo]),
+				move.xo, move.yo,
+				move.xn, move.yn
+		);
+	}
+}
+
 char	*color_to_str(t_color color)
 {
 	switch (color)
