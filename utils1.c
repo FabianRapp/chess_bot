@@ -20,4 +20,3 @@ t_color	inverse_color(t_color color)
 		default: ASSUME(0);
 	}
 }
-

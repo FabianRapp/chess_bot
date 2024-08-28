@@ -23,12 +23,13 @@ int	init(t_manager *manager)
 	manager->games = calloc(manager->game_count, sizeof(t_game));
 	manager->white_players = calloc(manager->game_count, sizeof(t_player));
 	manager->black_players = calloc(manager->game_count, sizeof(t_player));
-	if (errno)
-		return (0);
+	assert(!errno);
 	for (size_t i = 0; i < GAME_COUNT; i++)
 	{
 		manager->black_players[i].game = manager->games + i;
 		manager->white_players[i].game = manager->games + i;
+		init_neural_net(&(manager->black_players[i].neural_net));
+		init_neural_net(&(manager->white_players[i].neural_net));
 		pthread_mutex_init(&manager->games[i].mutex, NULL);
 		pthread_cond_init(&manager->games[i].turn_over, NULL);
 	}

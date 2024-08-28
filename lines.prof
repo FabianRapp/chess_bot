@@ -1,0 +1,352 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls  ns/call  ns/call  name    
+ 56.58     13.71    13.71                             _mm256_fmadd_pd (fmaintrin.h:49 @ 5760)
+ 33.31     21.79     8.07                             forward_propergate (neural_network.c:86 @ 576b)
+  2.31     22.35     0.56                             forward_propergate (neural_network.c:95 @ 5774)
+  1.24     22.65     0.30                             forward_propergate (neural_network.c:98 @ 57c8)
+  1.24     22.95     0.30                             forward_propergate (neural_network.c:96 @ 57f5)
+  0.99     23.19     0.24                             forward_propergate (neural_network.c:100 @ 586d)
+  0.95     23.42     0.23                             forward_propergate (neural_network.c:78 @ 5853)
+  0.80     23.61     0.20                             rectified_linear_unit_activation (neural_network.c:57 @ 584e)
+  0.52     23.74     0.12                             forward_propergate (neural_network.c:96 @ 578e)
+  0.29     23.81     0.07                             forward_propergate (neural_network.c:114 @ 5940)
+  0.27     23.88     0.07                             forward_propergate (neural_network.c:95 @ 57b6)
+  0.17     23.91     0.04                             forward_propergate (neural_network.c:81 @ 575c)
+  0.12     23.95     0.03                             eval_board (neural_network.c:137 @ 5b2d)
+  0.12     23.98     0.03                             forward_propergate (neural_network.c:78 @ 5874)
+  0.12     24.00     0.03                             forward_propergate (neural_network.c:113 @ 5960)
+  0.12     24.04     0.03                             forward_propergate (neural_network.c:111 @ 596c)
+  0.08     24.05     0.02                             eval_board (neural_network.c:137 @ 5c2c)
+  0.04     24.07     0.01   197355    50.67    50.67  eval_board (neural_network.c:123 @ 5a30)
+  0.04     24.07     0.01                             bounds_check (engine.c:29 @ 28ae)
+  0.04     24.09     0.01                             eval_board (neural_network.c:137 @ 5ae6)
+  0.04     24.09     0.01                             eval_board (neural_network.c:137 @ 5bab)
+  0.04     24.11     0.01                             eval_board (neural_network.c:134 @ 5c1b)
+  0.04     24.11     0.01                             eval_board (neural_network.c:134 @ 5c88)
+  0.04     24.12     0.01                             eval_board (neural_network.c:134 @ 5d0d)
+  0.04     24.14     0.01                             eval_board (neural_network.c:137 @ 5e69)
+  0.04     24.14     0.01                             execute_move (engine.c:428 @ 2ed9)
+  0.04     24.16     0.01                             forward_propergate (neural_network.c:74 @ 56b9)
+  0.04     24.16     0.01                             forward_propergate (neural_network.c:86 @ 5717)
+  0.04     24.18     0.01                             ft_memmove (ft_memmove.c:30 @ 7150)
+  0.04     24.18     0.01                             in_check (engine.c:82 @ 2a0a)
+  0.04     24.20     0.01                             rectified_linear_unit_activation (neural_network.c:57 @ 59c5)
+  0.02     24.20     0.01                             add_queen_moves (engine.c:211 @ 3fdc)
+  0.02     24.20     0.01                             add_queen_moves (engine.c:208 @ 3fdf)
+  0.02     24.21     0.01                             eval_board (neural_network.c:134 @ 5d92)
+  0.02     24.21     0.01                             eval_board (neural_network.c:130 @ 5d9b)
+  0.02     24.22     0.01                             in_check (engine.c:86 @ 29ff)
+  0.02     24.23     0.01                             in_check (engine.c:85 @ 2a02)
+  0.02     24.23     0.01                             in_check (engine.c:87 @ 2a05)
+  0.02     24.23     0.01                             in_check (engine.c:81 @ 2a0f)
+  0.02     24.24     0.01                             rectified_linear_unit_activation (neural_network.c:57 @ 5867)
+  0.00     24.24     0.00  1984200     0.00     0.00  piece_color (utils1.c:4 @ 16d0)
+  0.00     24.24     0.00   495826     0.00     0.00  uncolor_piece (utils1.c:9 @ 1710)
+  0.00     24.24     0.00   206102     0.00     0.00  execute_move (engine.c:407 @ 2e60)
+  0.00     24.24     0.00   201100     0.00     0.00  endangers_king (engine.c:155 @ 3770)
+  0.00     24.24     0.00   201100     0.00     0.00  in_check (engine.c:63 @ 2610)
+  0.00     24.24     0.00   197355     0.00     0.00  dyn_arr_add_save (ft_dynamic_arr.c:67 @ 6590)
+  0.00     24.24     0.00   197355     0.00     0.00  forward_propergate (neural_network.c:68 @ 5680)
+  0.00     24.24     0.00   197355     0.00     0.00  ft_memmove (ft_memmove.c:18 @ 6f20)
+  0.00     24.24     0.00   150144     0.00     0.00  add_line_moves (engine.c:172 @ 3820)
+  0.00     24.24     0.00    35002     0.00     0.00  ft_bzero (ft_bzero.c:16 @ 6390)
+  0.00     24.24     0.00    30000     0.00     0.00  dyn_arr_resize (ft_dynamic_arr.c:38 @ 64c0)
+  0.00     24.24     0.00    30000     0.00     0.00  ft_memcpy (ft_memcpy.c:16 @ 6cb0)
+  0.00     24.24     0.00    27604     0.00     0.00  add_pawn_moves (engine.c:258 @ 3b50)
+  0.00     24.24     0.00    26277     0.00     0.00  inverse_color (utils1.c:15 @ 1750)
+  0.00     24.24     0.00    10004     0.00     0.00  add_knight_moves (engine.c:228 @ 39f0)
+  0.00     24.24     0.00     5002     0.00     0.00  dyn_arr_free (ft_dynamic_arr2.c:4 @ 6600)
+  0.00     24.24     0.00     5002     0.00     0.00  dyn_arr_init (ft_dynamic_arr.c:12 @ 6420)
+  0.00     24.24     0.00     5002     0.00     0.00  get_all_possible_moves (engine.c:354 @ 3db0)
+  0.00     24.24     0.00     5002     0.00     0.00  select_move_neural_net (neural_network.c:157 @ 5fe0)
+  0.00     24.24     0.00        2     0.00     0.00  init_neural_net (neural_network.c:43 @ 53e0)
+  0.00     24.24     0.00        1     0.00     0.00  init (init.c:18 @ 1800)
+  0.00     24.24     0.00        1     0.00     0.00  launch_game (init.c:4 @ 1770)
+  0.00     24.24     0.00        1     0.00     0.00  reset_game (reset.c:15 @ 1ee0)
+
+ %         the percentage of the total running time of the
+time       program used by this function.
+
+cumulative a running sum of the number of seconds accounted
+ seconds   for by this function and those listed above it.
+
+ self      the number of seconds accounted for by this
+seconds    function alone.  This is the major sort for this
+           listing.
+
+calls      the number of times this function was invoked, if
+           this function is profiled, else blank.
+
+ self      the average number of milliseconds spent in this
+ms/call    function per call, if this function is profiled,
+	   else blank.
+
+ total     the average number of milliseconds spent in this
+ms/call    function and its descendents per call, if this
+	   function is profiled, else blank.
+
+name       the name of the function.  This is the minor sort
+           for this listing. The index shows the location of
+	   the function in the gprof listing. If the index is
+	   in parenthesis it shows where it would appear in
+	   the gprof listing if it were to be printed.
+
+Copyright (C) 2012-2024 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+		     Call graph (explanation follows)
+
+
+granularity: each sample hit covers 4 byte(s) for 0.04% of 24.24 seconds
+
+index % time    self  children    called     name
+                0.01    0.00  197355/197355      select_move_neural_net (neural_network.c:176 @ 6153) [32]
+[18]     0.0    0.01    0.00  197355         eval_board (neural_network.c:123 @ 5a30) [18]
+-----------------------------------------------
+                0.00    0.00       1/1984200     place_new_piece (reset.c:5 @ 1f83) [2750]
+                0.00    0.00       1/1984200     place_new_piece (reset.c:5 @ 1fcf) [2757]
+                0.00    0.00       1/1984200     place_new_piece (reset.c:11 @ 200c) [2764]
+                0.00    0.00       1/1984200     place_new_piece (reset.c:5 @ 205c) [2774]
+                0.00    0.00       1/1984200     place_new_piece (reset.c:11 @ 209b) [2782]
+                0.00    0.00       1/1984200     place_new_piece (reset.c:7 @ 20f0) [2793]
+                0.00    0.00       1/1984200     place_new_piece (reset.c:11 @ 212a) [2800]
+                0.00    0.00       1/1984200     place_new_piece (reset.c:11 @ 2170) [2807]
+                0.00    0.00       1/1984200     place_new_piece (reset.c:11 @ 21b7) [2814]
+                0.00    0.00       1/1984200     place_new_piece (reset.c:11 @ 21fe) [2822]
+                0.00    0.00       1/1984200     place_new_piece (reset.c:7 @ 2250) [2833]
+                0.00    0.00       1/1984200     place_new_piece (reset.c:11 @ 228a) [2840]
+                0.00    0.00       1/1984200     place_new_piece (reset.c:5 @ 22dd) [2850]
+                0.00    0.00       1/1984200     place_new_piece (reset.c:5 @ 231f) [2859]
+                0.00    0.00       1/1984200     place_new_piece (reset.c:11 @ 235b) [2865]
+                0.00    0.00       1/1984200     place_new_piece (reset.c:11 @ 239f) [2872]
+                0.00    0.00       8/1984200     place_new_piece (reset.c:5 @ 23f0) [2880]
+                0.00    0.00       8/1984200     place_new_piece (reset.c:11 @ 243b) [2887]
+                0.00    0.00    8780/1984200     add_pawn_moves (engine.c:277 @ 3d0c) [265]
+                0.00    0.00    9999/1984200     add_pawn_moves (engine.c:286 @ 3c58) [254]
+                0.00    0.00   10009/1984200     in_check (engine.c:116 @ 2cf0) [2446]
+                0.00    0.00   13769/1984200     add_knight_moves (engine.c:237 @ 3b07) [141]
+                0.00    0.00   16441/1984200     in_check (engine.c:116 @ 2b0b) [2434]
+                0.00    0.00   39963/1984200     color_check (engine.c:39 @ 3acd) [559]
+                0.00    0.00   43821/1984200     in_check (engine.c:116 @ 2c7f) [2443]
+                0.00    0.00   52460/1984200     in_check (engine.c:116 @ 2dff) [2455]
+                0.00    0.00   52520/1984200     in_check (engine.c:136 @ 2ac8) [2431]
+                0.00    0.00   54956/1984200     in_check (engine.c:116 @ 2b8f) [2437]
+                0.00    0.00   56105/1984200     in_check (engine.c:145 @ 2a82) [2428]
+                0.00    0.00   71314/1984200     add_line_moves (engine.c:178 @ 3966) [156]
+                0.00    0.00   86156/1984200     in_check (engine.c:116 @ 2d8e) [2452]
+                0.00    0.00   89695/1984200     in_check (engine.c:116 @ 2bff) [2440]
+                0.00    0.00  101090/1984200     in_check (engine.c:116 @ 2d40) [2449]
+                0.00    0.00  204766/1984200     color_check (engine.c:38 @ 38c5) [551]
+                0.00    0.00  206102/1984200     execute_move (engine.c:408 @ 2e87) [768]
+                0.00    0.00  866222/1984200     in_check (engine.c:85 @ 2990) [2416]
+[42]     0.0    0.00    0.00 1984200         piece_color (utils1.c:4 @ 16d0) [42]
+-----------------------------------------------
+                0.00    0.00       1/495826      in_check (engine.c:145 @ 2a82) [2428]
+                0.00    0.00      19/495826      in_check (engine.c:116 @ 2d40) [2449]
+                0.00    0.00    1251/495826      in_check (engine.c:136 @ 2ac8) [2431]
+                0.00    0.00    2486/495826      in_check (engine.c:117 @ 2e2f) [2456]
+                0.00    0.00    2489/495826      in_check (engine.c:117 @ 2cb9) [2444]
+                0.00    0.00    2534/495826      in_check (engine.c:117 @ 2b4f) [2435]
+                0.00    0.00    4996/495826      in_check (engine.c:116 @ 2cf0) [2446]
+                0.00    0.00   65140/495826      add_pieces_moves (engine.c:308 @ 3e5c) [272]
+                0.00    0.00   84664/495826      in_check (engine.c:116 @ 2bff) [2440]
+                0.00    0.00  126144/495826      in_check (engine.c:91 @ 29aa) [2418]
+                0.00    0.00  206102/495826      execute_move (engine.c:410 @ 2eaf) [770]
+[43]     0.0    0.00    0.00  495826         uncolor_piece (utils1.c:9 @ 1710) [43]
+-----------------------------------------------
+                0.00    0.00    5002/206102      game_loop (engine.c:488 @ 507a) [2150]
+                0.00    0.00  201100/206102      endangers_king (engine.c:159 @ 37e0) [699]
+[44]     0.0    0.00    0.00  206102         execute_move (engine.c:407 @ 2e60) [44]
+-----------------------------------------------
+                0.00    0.00     100/201100      add_pawn_moves (engine.c:299 @ 3c16) [251]
+                0.00    0.00    2533/201100      add_pawn_moves (engine.c:278 @ 3d18) [266]
+                0.00    0.00    5005/201100      add_pawn_moves (engine.c:288 @ 3c7c) [256]
+                0.00    0.00   15083/201100      add_pawn_moves (engine.c:269 @ 3cbc) [261]
+                0.00    0.00   27466/201100      add_knight_moves (engine.c:235 @ 3af7) [140]
+                0.00    0.00  150913/201100      add_line_moves (engine.c:183 @ 3906) [153]
+[45]     0.0    0.00    0.00  201100         endangers_king (engine.c:155 @ 3770) [45]
+-----------------------------------------------
+                0.00    0.00  201100/201100      endangers_king (engine.c:165 @ 37f0) [701]
+[46]     0.0    0.00    0.00  201100         in_check (engine.c:63 @ 2610) [46]
+-----------------------------------------------
+                0.00    0.00     100/197355      add_pawn_moves (engine.c:304 @ 3c50) [253]
+                0.00    0.00    2533/197355      add_pawn_moves (engine.c:281 @ 3d6d) [270]
+                0.00    0.00    5005/197355      add_pawn_moves (engine.c:291 @ 3d87) [271]
+                0.00    0.00   15083/197355      add_pawn_moves (engine.c:271 @ 3d50) [269]
+                0.00    0.00   27466/197355      add_knight_moves (engine.c:237 @ 3b07) [141]
+                0.00    0.00  147168/197355      add_line_moves (engine.c:185 @ 39a0) [157]
+[47]     0.0    0.00    0.00  197355         dyn_arr_add_save (ft_dynamic_arr.c:67 @ 6590) [47]
+-----------------------------------------------
+                0.00    0.00  197355/197355      eval_board (neural_network.c:142 @ 5eb3) [760]
+[48]     0.0    0.00    0.00  197355         forward_propergate (neural_network.c:68 @ 5680) [48]
+-----------------------------------------------
+                0.00    0.00  197355/197355      dyn_arr_add_save (ft_dynamic_arr.c:76 @ 65c5) [635]
+[49]     0.0    0.00    0.00  197355         ft_memmove (ft_memmove.c:18 @ 6f20) [49]
+-----------------------------------------------
+                0.00    0.00   30096/150144      add_bishop_moves (engine.c:223 @ 3f6c) [73]
+                0.00    0.00   40016/150144      add_rook_moves (engine.c:251 @ 3eec) [344]
+                0.00    0.00   40016/150144      add_queen_moves (engine.c:208 @ 3fdf) [34]
+                0.00    0.00   40016/150144      add_king_moves (engine.c:197 @ 404f) [105]
+[50]     0.0    0.00    0.00  150144         add_line_moves (engine.c:172 @ 3820) [50]
+-----------------------------------------------
+                0.00    0.00    5002/35002       dyn_arr_init (ft_dynamic_arr.c:19 @ 645f) [664]
+                0.00    0.00   30000/35002       dyn_arr_resize (ft_dynamic_arr.c:57 @ 6530) [679]
+[51]     0.0    0.00    0.00   35002         ft_bzero (ft_bzero.c:16 @ 6390) [51]
+-----------------------------------------------
+                0.00    0.00   30000/30000       dyn_arr_add_save (ft_dynamic_arr.c:73 @ 65bc) [634]
+[52]     0.0    0.00    0.00   30000         dyn_arr_resize (ft_dynamic_arr.c:38 @ 64c0) [52]
+-----------------------------------------------
+                0.00    0.00   30000/30000       dyn_arr_resize (ft_dynamic_arr.c:57 @ 6530) [679]
+[53]     0.0    0.00    0.00   30000         ft_memcpy (ft_memcpy.c:16 @ 6cb0) [53]
+-----------------------------------------------
+                0.00    0.00   27604/27604       add_pieces_moves (engine.c:341 @ 4070) [278]
+[54]     0.0    0.00    0.00   27604         add_pawn_moves (engine.c:258 @ 3b50) [54]
+-----------------------------------------------
+                0.00    0.00   26277/26277       execute_move (engine.c:439 @ 3160) [798]
+[55]     0.0    0.00    0.00   26277         inverse_color (utils1.c:15 @ 1750) [55]
+-----------------------------------------------
+                0.00    0.00   10004/10004       add_pieces_moves (engine.c:331 @ 3f10) [276]
+[56]     0.0    0.00    0.00   10004         add_knight_moves (engine.c:228 @ 39f0) [56]
+-----------------------------------------------
+                0.00    0.00    5002/5002        select_move_neural_net (neural_network.c:184 @ 61d0) [3052]
+[57]     0.0    0.00    0.00    5002         dyn_arr_free (ft_dynamic_arr2.c:4 @ 6600) [57]
+-----------------------------------------------
+                0.00    0.00    5002/5002        get_all_possible_moves (engine.c:362 @ 3e10) [2171]
+[58]     0.0    0.00    0.00    5002         dyn_arr_init (ft_dynamic_arr.c:12 @ 6420) [58]
+-----------------------------------------------
+                0.00    0.00    5002/5002        memcpy (string_fortified.h:29 @ 6030) [2694]
+[59]     0.0    0.00    0.00    5002         get_all_possible_moves (engine.c:354 @ 3db0) [59]
+-----------------------------------------------
+                0.00    0.00    5002/5002        game_loop (engine.c:480 @ 5063) [2148]
+[60]     0.0    0.00    0.00    5002         select_move_neural_net (neural_network.c:157 @ 5fe0) [60]
+-----------------------------------------------
+                0.00    0.00       2/2           init (init.c:31 @ 188d) [2487]
+[61]     0.0    0.00    0.00       2         init_neural_net (neural_network.c:43 @ 53e0) [61]
+-----------------------------------------------
+                0.00    0.00       1/1           printf (stdio2.h:86 @ 14cd) [2939]
+[62]     0.0    0.00    0.00       1         init (init.c:18 @ 1800) [62]
+-----------------------------------------------
+                0.00    0.00       1/1           main (main.c:19 @ 14de) [2687]
+[63]     0.0    0.00    0.00       1         launch_game (init.c:4 @ 1770) [63]
+-----------------------------------------------
+                0.00    0.00       1/1           launch_game (init.c:6 @ 17a0) [2597]
+[64]     0.0    0.00    0.00       1         reset_game (reset.c:15 @ 1ee0) [64]
+-----------------------------------------------
+
+ This table describes the call tree of the program, and was sorted by
+ the total amount of time spent in each function and its children.
+
+ Each entry in this table consists of several lines.  The line with the
+ index number at the left hand margin lists the current function.
+ The lines above it list the functions that called this function,
+ and the lines below it list the functions this one called.
+ This line lists:
+     index	A unique number given to each element of the table.
+		Index numbers are sorted numerically.
+		The index number is printed next to every function name so
+		it is easier to look up where the function is in the table.
+
+     % time	This is the percentage of the `total' time that was spent
+		in this function and its children.  Note that due to
+		different viewpoints, functions excluded by options, etc,
+		these numbers will NOT add up to 100%.
+
+     self	This is the total amount of time spent in this function.
+
+     children	This is the total amount of time propagated into this
+		function by its children.
+
+     called	This is the number of times the function was called.
+		If the function called itself recursively, the number
+		only includes non-recursive calls, and is followed by
+		a `+' and the number of recursive calls.
+
+     name	The name of the current function.  The index number is
+		printed after it.  If the function is a member of a
+		cycle, the cycle number is printed between the
+		function's name and the index number.
+
+
+ For the function's parents, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the function into this parent.
+
+     children	This is the amount of time that was propagated from
+		the function's children into this parent.
+
+     called	This is the number of times this parent called the
+		function `/' the total number of times the function
+		was called.  Recursive calls to the function are not
+		included in the number after the `/'.
+
+     name	This is the name of the parent.  The parent's index
+		number is printed after it.  If the parent is a
+		member of a cycle, the cycle number is printed between
+		the name and the index number.
+
+ If the parents of the function cannot be determined, the word
+ `<spontaneous>' is printed in the `name' field, and all the other
+ fields are blank.
+
+ For the function's children, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the child into the function.
+
+     children	This is the amount of time that was propagated from the
+		child's children to the function.
+
+     called	This is the number of times the function called
+		this child `/' the total number of times the child
+		was called.  Recursive calls by the child are not
+		listed in the number after the `/'.
+
+     name	This is the name of the child.  The child's index
+		number is printed after it.  If the child is a
+		member of a cycle, the cycle number is printed
+		between the name and the index number.
+
+ If there are any cycles (circles) in the call graph, there is an
+ entry for the cycle-as-a-whole.  This entry shows who called the
+ cycle (as parents) and the members of the cycle (as children.)
+ The `+' recursive calls entry shows the number of function calls that
+ were internal to the cycle, and the calls entry for each member shows,
+ for that member, how many times it was called from other members of
+ the cycle.
+
+Copyright (C) 2012-2024 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Index by function name
+
+   [1] _mm256_fmadd_pd (fmaintrin.h:49 @ 5760) [36] eval_board (neural_network.c:130 @ 5d9b) [53] ft_memcpy (ft_memcpy.c:16 @ 6cb0)
+  [56] add_knight_moves (engine.c:228 @ 39f0) [25] eval_board (neural_network.c:137 @ 5e69) [49] ft_memmove (ft_memmove.c:18 @ 6f20)
+  [50] add_line_moves (engine.c:172 @ 3820) [44] execute_move (engine.c:407 @ 2e60) [29] ft_memmove (ft_memmove.c:30 @ 7150)
+  [54] add_pawn_moves (engine.c:258 @ 3b50) [26] execute_move (engine.c:428 @ 2ed9) [59] get_all_possible_moves (engine.c:354 @ 3db0)
+  [33] add_queen_moves (engine.c:211 @ 3fdc) [48] forward_propergate (neural_network.c:68 @ 5680) [46] in_check (engine.c:63 @ 2610)
+  [34] add_queen_moves (engine.c:208 @ 3fdf) [27] forward_propergate (neural_network.c:74 @ 56b9) [37] in_check (engine.c:86 @ 29ff)
+  [19] bounds_check (engine.c:29 @ 28ae) [28] forward_propergate (neural_network.c:86 @ 5717) [38] in_check (engine.c:85 @ 2a02)
+  [47] dyn_arr_add_save (ft_dynamic_arr.c:67 @ 6590) [12] forward_propergate (neural_network.c:81 @ 575c) [39] in_check (engine.c:87 @ 2a05)
+  [57] dyn_arr_free (ft_dynamic_arr2.c:4 @ 6600) [2] forward_propergate (neural_network.c:86 @ 576b) [30] in_check (engine.c:82 @ 2a0a)
+  [58] dyn_arr_init (ft_dynamic_arr.c:12 @ 6420) [3] forward_propergate (neural_network.c:95 @ 5774) [40] in_check (engine.c:81 @ 2a0f)
+  [52] dyn_arr_resize (ft_dynamic_arr.c:38 @ 64c0) [9] forward_propergate (neural_network.c:96 @ 578e) [62] init (init.c:18 @ 1800)
+  [45] endangers_king (engine.c:155 @ 3770) [11] forward_propergate (neural_network.c:95 @ 57b6) [61] init_neural_net (neural_network.c:43 @ 53e0)
+  [18] eval_board (neural_network.c:123 @ 5a30) [4] forward_propergate (neural_network.c:98 @ 57c8) [55] inverse_color (utils1.c:15 @ 1750)
+  [20] eval_board (neural_network.c:137 @ 5ae6) [5] forward_propergate (neural_network.c:96 @ 57f5) [63] launch_game (init.c:4 @ 1770)
+  [13] eval_board (neural_network.c:137 @ 5b2d) [7] forward_propergate (neural_network.c:78 @ 5853) [42] piece_color (utils1.c:4 @ 16d0)
+  [21] eval_board (neural_network.c:137 @ 5bab) [6] forward_propergate (neural_network.c:100 @ 586d) [8] rectified_linear_unit_activation (neural_network.c:57 @ 584e)
+  [22] eval_board (neural_network.c:134 @ 5c1b) [14] forward_propergate (neural_network.c:78 @ 5874) [41] rectified_linear_unit_activation (neural_network.c:57 @ 5867)
+  [17] eval_board (neural_network.c:137 @ 5c2c) [10] forward_propergate (neural_network.c:114 @ 5940) [31] rectified_linear_unit_activation (neural_network.c:57 @ 59c5)
+  [23] eval_board (neural_network.c:134 @ 5c88) [15] forward_propergate (neural_network.c:113 @ 5960) [64] reset_game (reset.c:15 @ 1ee0)
+  [24] eval_board (neural_network.c:134 @ 5d0d) [16] forward_propergate (neural_network.c:111 @ 596c) [60] select_move_neural_net (neural_network.c:157 @ 5fe0)
+  [35] eval_board (neural_network.c:134 @ 5d92) [51] ft_bzero (ft_bzero.c:16 @ 6390) [43] uncolor_piece (utils1.c:9 @ 1710)

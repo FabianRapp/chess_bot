@@ -1,11 +1,42 @@
 #ifndef MAIN_H
-#define MAIN_H
+# define MAIN_H
 
 /* Missing moves:
 * pawn promotion
 * en passnt
 * casteling
 */
+/*TODO:
+ * create look up table for pieces that protect the king
+ * differ from check/no check move generation
+ * missingg moves
+ * code cleanup and simplification
+*/
+
+typedef enum e_uncolored_piece	t_uncolored_piece;
+typedef enum e_piece			t_piece;
+typedef enum e_color			t_color;
+typedef struct s_move			t_move;
+typedef struct s_player			t_player;
+typedef struct s_position		t_position;
+typedef struct s_game			t_game;
+
+#define ERROR(str) do {fprintf(stderr, "error in %s at %d: %s\n", __FILE__,\
+							__LINE__, str);exit(1);} while(0)
+
+#ifdef NO_DEBUG
+# define ASSUME(cond) do { if (!(cond)){__builtin_unreachable();}} while(0)
+#else // NO_DEBUG
+# define ASSUME(cond) assert(cond)
+#endif//NO_DEBUG
+
+#ifndef GAME_COUNT
+# define GAME_COUNT 1
+#endif // GAME_COUNT
+
+# ifndef ALIGNMENT
+#  define ALIGNMENT 32
+# endif//ALIGNMENT
 
 #include <stdio.h>
 #include <sys/param.h>
@@ -18,92 +49,8 @@
 #include <string.h>
 #include <pthread.h>
 #include <time.h>
-
-#ifndef GAME_COUNT
-# define GAME_COUNT 1
-#endif // GAME_COUNT
-
-#define HEIGHT 8
-#define WIDTH 8
-
-#define ERROR(str) do {fprintf(stderr, "error in %s at %d: %s\n", __FILE__,\
-							__LINE__, str);exit(1);} while(0)
-
-#ifdef NO_DEBUG
-# define ASSUME(cond) do { if (!cond){__builtin_unreachable();}} while(0)
-#else // NO_DEBUG
-# define ASSUME(cond) assert(cond)
-#endif//NO_DEBUG
-
-
-// use % 2 to determine the color
-// use (t_piece var -1) / 2 to match t_uncolored_piece to t_piece
-typedef enum e_uncolored_piece
-{
-	KING = 0,
-	QUEEN = 1,
-	BISHOP = 2,
-	KNIGHT = 3,
-	ROOK = 4,
-	PAWN = 5,
-}	t_uncolored_piece;
-
-typedef enum e_piece
-{
-	EMPTY = 0,
-	KING_B = 1,
-	KING_W = 2,
-	QUEEN_B = 3,
-	QUEEN_W = 4,
-	BISHOP_B = 5,
-	BISHOP_W = 6,
-	KNIGHT_B = 7,
-	KNIGHT_W = 8,
-	ROOK_B = 9,
-	ROOK_W = 10,
-	PAWN_B = 11,
-	PAWN_W = 12,
-}	t_piece;
-
-#define KING_VECS		{{1, 0}, {0, 1}, {-1, 0}, {0, -1}, {1, 1}, {-1, -1}, {1, -1}, {-1, 1}}
-#define QUEEN_VECS		KING_VECS
-#define BISHOP_VECS		{{1, 1}, {-1, 1}, {-1, -1}, {1, -1}}
-#define KNIGHT_VECS		{{-2, -1}, {-2, 1}, {2, -1}, {2, 1}, {-1, -2}, {1, -2}, {-1, 2}, {1, 2}}
-#define ROOK_VECS		{{0, 1}, {-1, 0}, {0, -1}, {1, 0}}
-#define PAWN_VECS_WHITE	{{},}
-#define PAWN_VECS_BLACK {{},}
-
-typedef enum e_color
-{
-	WHITE = 0,
-	BLACK = 1,
-	COLOR_COUNT = 2,
-}	t_color;
-
-typedef struct s_game t_game;
-
-// fom field xo/yo to field xn/yn
-typedef struct s_move
-{
-	int8_t	xo;
-	int8_t	yo;
-	int8_t	xn;
-	int8_t	yn;
-}	t_move;
-//typedef struct s_move
-//{
-//	uint8_t	xo : 3;
-//	uint8_t	yo : 3;
-//	uint8_t	xn : 3;
-//	uint8_t	yn : 3;
-//}	t_move;
-
-typedef struct s_player
-{
-	t_color		color;
-	t_game		*game;
-	pthread_t	thread;
-}	t_player;
+#include "neural_network.h"
+#include "types.h"
 
 typedef struct s_position
 {
@@ -112,10 +59,18 @@ typedef struct s_position
 	t_piece				type;
 }	t_position;
 
+typedef struct s_player
+{
+	t_color				color;
+	t_game				*game;
+	pthread_t			thread;
+	t_neural_network	neural_net;
+}	t_player;
+
 typedef struct s_game
 {
-	t_piece			board[HEIGHT][WIDTH];
-	t_position		positions[COLOR_COUNT][16];
+	t_piece			board[HEIGHT][WIDTH];//has all pieces with empty field
+	t_position		positions[COLOR_COUNT][16];//has all pieces without empty fields
 	uint8_t			piece_count[COLOR_COUNT];
 	pthread_cond_t	turn_over;
 	pthread_mutex_t	mutex;
@@ -131,9 +86,18 @@ typedef struct s_manager
 	t_player	*white_players;
 }	t_manager;
 
-// main.c
+// engine.c
 void	*game_loop(void *player_data);
 void	execute_move(t_game *game, t_move move, bool print);
+bool	in_check(t_player *player);
+void	get_all_possible_moves(t_player *player, t_move **ret_moves, size_t *ret_moves_count);
+t_move	get_rdm_move(t_player *player);
+
+// neural_network.c
+void				init_neural_net(t_neural_network *neural_net);
+t_move				select_move_neural_net(t_player *player);
+void				store_neural_net(t_neural_network *neural_net, char *path);
+t_neural_network	load_neural_net(char *path);
 
 // utils1.c
 t_color				piece_color(t_piece piece);

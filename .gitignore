@@ -2,10 +2,13 @@ parent
 child
 compile_commands.json
 chess
+test.c
+test.cu
 .cache/*
 *.a
 *.o
 *.out
+main
 a
 b
 c
