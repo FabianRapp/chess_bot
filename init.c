@@ -5,6 +5,7 @@ int	launch_game(t_manager *manager, size_t game_index)
 	reset_game(manager->games + game_index);
 	manager->black_players[game_index].color = BLACK;
 	manager->white_players[game_index].color = WHITE;
+	manager->games[game_index].state = ONGOING;
 	pthread_create(&manager->black_players[game_index].thread, NULL, game_loop,
 			manager->black_players + game_index);
 	pthread_create(&manager->white_players[game_index].thread, NULL, game_loop,
@@ -32,6 +33,7 @@ int	init(t_manager *manager)
 		init_neural_net(&(manager->white_players[i].neural_net));
 		pthread_mutex_init(&manager->games[i].mutex, NULL);
 		pthread_cond_init(&manager->games[i].turn_over, NULL);
+		pthread_mutex_init(&manager->games[i].mutex_eval, NULL);
 	}
 	return (1);
 }

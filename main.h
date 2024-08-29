@@ -52,6 +52,16 @@ typedef struct s_game			t_game;
 #include "neural_network.h"
 #include "types.h"
 
+typedef enum e_game_state
+{
+	NOT_STARTED = 0,
+	ONGOING = 1,
+	TIE = 2,
+	BLACK_WON,
+	WHITE_WON,
+	DONE
+}	t_game_state;
+
 typedef struct s_position
 {
 	uint8_t				x;
@@ -75,7 +85,12 @@ typedef struct s_game
 	pthread_cond_t	turn_over;
 	pthread_mutex_t	mutex;
 	bool			check;
-	uint8_t			turn ;
+	uint8_t			turn;
+	pthread_mutex_t	mutex_eval;
+	t_game_state	state;
+	t_move			move;
+	size_t			generate_turn;
+	size_t			eval_turn;
 }	t_game;
 
 typedef struct s_manager
@@ -86,16 +101,17 @@ typedef struct s_manager
 	t_player	*white_players;
 }	t_manager;
 
+
 // engine.c
 void	*game_loop(void *player_data);
-void	execute_move(t_game *game, t_move move, bool print);
+int		execute_move(t_game *game, bool print);
 bool	in_check(t_player *player);
 void	get_all_possible_moves(t_player *player, t_move **ret_moves, size_t *ret_moves_count);
 t_move	get_rdm_move(t_player *player);
 
 // neural_network.c
 void				init_neural_net(t_neural_network *neural_net);
-t_move				select_move_neural_net(t_player *player);
+t_move				select_move_neural_net(t_player *player, t_move *moves, size_t move_count);
 void				store_neural_net(t_neural_network *neural_net, char *path);
 t_neural_network	load_neural_net(char *path);
 

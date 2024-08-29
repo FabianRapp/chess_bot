@@ -16,10 +16,13 @@ void	reset_game(t_game *game)
 	bzero(game->board, sizeof game->board);
 	bzero(game->positions, sizeof game->positions);
 
+	game->state = NOT_STARTED;
 	game->turn = WHITE;
 	game->check = false;
 	game->piece_count[BLACK] = 0;
 	game->piece_count[WHITE] = 0;
+	game->generate_turn = 0;
+	game->eval_turn = 0;
 
 	place_new_piece(game, 4, 0, KING_B);
 	place_new_piece(game, 4, 7, KING_W);

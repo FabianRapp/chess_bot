@@ -1,6 +1,6 @@
 CC=cc
-CFLAGS= -fsanitize=address -g -Lm -I.
-CFLAGS_FAST = -O3 -march=native -mavx2 -DNO_DEBUG=1 -Lm -I.
+CFLAGS= -fsanitize=address -g -lm -I. -mavx2 -mfma
+CFLAGS_FAST = -O3 -march=native -mavx2 -DNO_DEBUG=1 -lm -I. -mfma
 SRC = main.c \
 	utils1.c \
 	init.c \
@@ -18,7 +18,7 @@ all: $(LIBFT) $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) $(LIBFT) -o $(NAME)
 
 fast:
-	$(CC) $(CFLAGS_FAST) -I./libft $(SRC) libft/*.c -o $(NAME)
+	$(CC) -I./libft $(SRC) libft/*.c -o $(NAME) $(CFLAGS_FAST) 
 #cd libft && make fclean && make CFLAGS='$(CFLAGS_FAST)';
 #make CFLAGS="$(CFLAGS_FAST)"
 

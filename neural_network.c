@@ -21,6 +21,23 @@ t_neural_network	load_neural_net(char *path)
 	return (neural_net);
 }
 
+// idk, understand later
+double generate_normal(double mean, double stddev)
+{
+	double	u1;
+	double	u2;
+	double	z0;
+
+	u1 = rand() / (RAND_MAX + 1.0);
+	u2 = rand() / (RAND_MAX + 1.0);
+
+	// Box-Muller transform
+	z0 = sqrtl(-2.0 * logl(u1)) * cos(2 * M_PI * u2);
+
+	// Scale and shift to match mean and standard deviation
+	return (z0 * stddev + mean);
+}
+
 void	init_layer(t_layer *layer, int input_count,
 		int output_count)
 {
@@ -28,11 +45,13 @@ void	init_layer(t_layer *layer, int input_count,
 	int ret = posix_memalign((void **)&layer->weights, ALIGNMENT,
 			sizeof(double) * output_count * input_count);
 	assert(!ret);
+	double	stddev = sqrtl(2.0 / input_count);
 	for (int i = 0; i < output_count * input_count; i++)
-		layer->weights[i] = rand() / (double)RAND_MAX;
+		layer->weights[i] = generate_normal(0, stddev);
 	ret = posix_memalign((void **)&layer->biases, ALIGNMENT,
 			sizeof (double) * output_count);
 	assert(!ret);
+	stddev = sqrtl(2.0 / output_count);
 	for (int i = 0; i < output_count; i++)
 		layer->biases[i] = rand() / (double)RAND_MAX;
 	layer->input_count = input_count;
@@ -62,8 +81,12 @@ double	do_activation(double sum, size_t layer)
 	return (rectified_linear_unit_activation(sum));
 }
 
+void	backward_propagate(t_neural_network *neural_net)
+{
+}
+
 // caller handels input cleanup and output allocation
-void	forward_propergate(t_neural_network *neural_net, double *inputs,
+void	forward_propagate(t_neural_network *neural_net, double *inputs,
 		double *outputs)
 {
 	double	*current_input = inputs;
@@ -139,7 +162,7 @@ void	eval_board(const t_piece board[HEIGHT][WIDTH], t_neural_network *neural_net
 		}
 	}
 	ASSUME(index == INPUT_DIM - 1);
-	forward_propergate(neural_net, board_converted, outputs);
+	forward_propagate(neural_net, board_converted, outputs);
 }
 
 double	avg(double *arr, size_t len)
@@ -153,12 +176,8 @@ double	avg(double *arr, size_t len)
 	return (sum / len);
 }
 
-t_move	select_move_neural_net(t_player *player)
+t_move	select_move_neural_net(t_player *player, t_move *moves, size_t move_count)
 {
-	t_move	*moves;
-	size_t	move_count;
-
-	get_all_possible_moves(player, &moves, &move_count);
 	ASSUME(move_count && moves);
 	double best_score = -INFINITY;
 	t_move	best_move;

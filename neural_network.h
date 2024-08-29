@@ -33,7 +33,7 @@ typedef struct s_neural_network
 }	t_neural_network;
 
 //public-----
-t_move				select_move_neural_net(t_player *player);
+t_move				select_move_neural_net(t_player *player, t_move *moves, size_t move_count);
 void				init_neural_net(t_neural_network *neural_net);
 void				store_neural_net(t_neural_network *neural_net, char *path);
 t_neural_network	load_neural_net(char *path);
@@ -42,7 +42,7 @@ t_neural_network	load_neural_net(char *path);
 void	eval_board(const t_piece board[HEIGHT][WIDTH],
 				  t_neural_network *neural_net, double *outputs);
 void	init_layer(t_layer *layer, int input_count, int output_count);
-void	forward_propergate(t_neural_network *layer, double* inputs, double *outputs);
+void	forward_propagate(t_neural_network *layer, double* inputs, double *outputs);
 
 
 #endif //NEURAL_NETWORK_H

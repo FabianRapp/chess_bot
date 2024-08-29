@@ -156,7 +156,8 @@ bool	endangers_king(t_move move, t_player *player)
 	t_game		game_cpy = *player->game;
 	t_player	player_cpy = *player;
 	player_cpy.game = &game_cpy;
-	execute_move(&game_cpy, move, false);
+	game_cpy.move = move;
+	execute_move(&game_cpy, false);
 	if (in_check(&player_cpy))
 	{
 		return (true);
@@ -394,7 +395,6 @@ t_move	get_rdm_move(t_player *player)
 		{
 			printf("(%s turn:)draw!\n", color_to_str(player->color));
 		}
-		exit(0);
 		player_cleanup(player);
 		ASSUME(0);
 	}
@@ -403,11 +403,28 @@ t_move	get_rdm_move(t_player *player)
 	return (move);
 }
 
-void	execute_move(t_game *game, t_move move, bool print)
+int	get_capture_piece_score(t_piece piece)
 {
+	t_uncolored_piece	uncol_piece = uncolor_piece(piece);
+	switch (uncol_piece)
+	{
+		case (KING): ASSUME(0);
+		case (QUEEN): return (15);
+		case (BISHOP): return (7);
+		case (KNIGHT): return (7);
+		case (ROOK): return (7);
+		case (PAWN): return (2);
+		default: ASSUME(0);
+	}
+}
+
+int	execute_move(t_game *game, bool print)
+{
+	t_move	move = game->move;
 	t_piece	piece = game->board[move.yo][move.xo];
 	t_color	color = piece_color(piece);
 	t_uncolored_piece uncol_piece = uncolor_piece(piece);
+	int		score = 0;
 
 	t_piece	target = game->board[move.yn][move.xn];
 
@@ -439,6 +456,8 @@ void	execute_move(t_game *game, t_move move, bool print)
 		t_color	opp_color = inverse_color(color);
 		const uint8_t	postion_data_size =
 				sizeof game->positions[opp_color][0];
+
+		score += get_capture_piece_score(game->board[move.yn][move.xn]);
 		for (int i = 0; i < 16; i++)
 		{
 			if (game->positions[opp_color][i].x == move.xn
@@ -464,43 +483,69 @@ void	execute_move(t_game *game, t_move move, bool print)
 	game->board[move.yn][move.xn] =
 		game->board[move.yo][move.xo];
 	game->board[move.yo][move.xo] = 0;
+	return (score);
 }
 
+// playr thread loop
 void	*game_loop(void *player_data)
 {
 	t_player	*player = (t_player *)player_data;
 
-	//if (player->color == BLACK)
-	//	printf("game loop black\n");
-	//else
-	//	printf("game loop white\n");
 	while (1)
 	{
 		pthread_mutex_lock(&player->game->mutex);
 		while (player->color != player->game->turn)
 			pthread_cond_wait(&player->game->turn_over, &player->game->mutex);
 		t_piece	king = player->game->positions[player->color][0].type;
-		ASSUME(king == KING_B || king == KING_W);
-		//printf("%s's turn!\n", color_to_str(player->color));
-		t_move	move;
-		move = select_move_neural_net(player);
-		//move = get_rdm_move(player);
-		execute_move(player->game, move, true);
-		//print_board(player->game);
+		ASSUME(king == KING_B || king == KING_W);//king should never not exist
+		pthread_mutex_lock(&player->game->mutex_eval);
+		if (player->game->state != ONGOING)
+		{
+			pthread_mutex_unlock(&player->game->mutex_eval);
+			player_cleanup(player);
+		}
+		pthread_mutex_unlock(&player->game->mutex_eval);
+		t_move	*moves;
+		size_t	move_count = 0;
+
+		get_all_possible_moves(player, &moves, &move_count);
+		if (!move_count)
+		{
+			pthread_mutex_lock(&player->game->mutex_eval);
+			if (in_check(player))
+			{
+				if (player->color == BLACK)
+					player->game->state = WHITE_WON;
+				else
+					player->game->state = BLACK_WON;
+			}
+			else
+				player->game->state = TIE;
+			pthread_mutex_unlock(&player->game->mutex_eval);
+			player_cleanup(player);
+			ASSUME(0);
+		}
+		t_move	move = select_move_neural_net(player, moves, move_count);
 		if (player->color == WHITE)
 			player->game->turn = BLACK;
 		else
 			player->game->turn = WHITE;
-		printf("iter: %d\n", iters);
-		if (iters++ > 5000)
+		pthread_mutex_lock(&player->game->mutex_eval);
+		player->game->move = move;
+		printf("generate_turn: %lu\n", player->game->generate_turn);
+		player->game->generate_turn++;
+		if (player->game->generate_turn > 1000)
 		{
-			printf("reached iter cap\n");
-			exit(0);
+			player->game->state = TIE;
+			pthread_mutex_unlock(&player->game->mutex_eval);
+			player_cleanup(player);
+			ASSUME(0);
 		}
+		pthread_mutex_unlock(&player->game->mutex_eval);
 		pthread_cond_broadcast(&player->game->turn_over);
 		pthread_mutex_unlock(&player->game->mutex);
 	}
-	player_cleanup(player);
+	ASSUME(0);
 	return (NULL);
 }
 
