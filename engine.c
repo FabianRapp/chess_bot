@@ -509,6 +509,8 @@ void	*game_loop(void *player_data)
 		size_t	move_count = 0;
 
 		get_all_possible_moves(player, &moves, &move_count);
+		for (int i = 0; i < move_count; i++)
+			print_move(moves[i], player->game);
 		if (!move_count)
 		{
 			pthread_mutex_lock(&player->game->mutex_eval);

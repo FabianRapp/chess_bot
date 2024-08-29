@@ -45,7 +45,11 @@ int	main(void)
 			{
 				move_count[i] = ++game->generate_turn;
 				t_move	move = game->move;
+				print_move(move, game);
 				// score for captures
+				// TODO: currently broken after moving execution to monitoring:
+				// agents have outdated game state when doing their move
+				// instead of fixing this rework threading engine
 				int score = execute_move(game, true);
 				if (game->state != ONGOING)
 				{
