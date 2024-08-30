@@ -1,6 +1,5 @@
 parent
 child
-compile_commands.json
 chess
 test.c
 test.cu

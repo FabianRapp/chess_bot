@@ -38,6 +38,10 @@ typedef struct s_game			t_game;
 #  define ALIGNMENT 32
 # endif//ALIGNMENT
 
+# ifndef MAX_MOVES
+#  define MAX_MOVES 1000
+# endif
+
 #include <stdio.h>
 #include <sys/param.h>
 #include <assert.h>
@@ -80,15 +84,16 @@ typedef struct s_player
 typedef struct s_game
 {
 	t_piece			board[HEIGHT][WIDTH];//has all pieces with empty field
+	t_piece			all_boards[MAX_MOVES][HEIGHT][WIDTH];
 	t_position		positions[COLOR_COUNT][16];//has all pieces without empty fields
 	uint8_t			piece_count[COLOR_COUNT];
+	t_move			moves[MAX_MOVES];
 	pthread_cond_t	turn_over;
 	pthread_mutex_t	mutex;
 	bool			check;
 	uint8_t			turn;
 	pthread_mutex_t	mutex_eval;
 	t_game_state	state;
-	t_move			move;
 	size_t			generate_turn;
 	size_t			eval_turn;
 }	t_game;
@@ -104,7 +109,7 @@ typedef struct s_manager
 
 // engine.c
 void	*game_loop(void *player_data);
-int		execute_move(t_game *game, bool print);
+int		execute_move(t_game *game, t_move move, bool print);
 bool	in_check(t_player *player);
 void	get_all_possible_moves(t_player *player, t_move **ret_moves, size_t *ret_moves_count);
 t_move	get_rdm_move(t_player *player);
@@ -112,8 +117,8 @@ t_move	get_rdm_move(t_player *player);
 // neural_network.c
 void				init_neural_net(t_neural_network *neural_net);
 t_move				select_move_neural_net(t_player *player, t_move *moves, size_t move_count);
-void				store_neural_net(t_neural_network *neural_net, char *path);
-t_neural_network	load_neural_net(char *path);
+void				store_neural_net(t_neural_network *neural_net, t_color color);
+void				load_neural_net(t_neural_network *neural_net, t_color color);
 
 // utils1.c
 t_color				piece_color(t_piece piece);

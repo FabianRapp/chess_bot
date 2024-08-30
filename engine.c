@@ -156,8 +156,7 @@ bool	endangers_king(t_move move, t_player *player)
 	t_game		game_cpy = *player->game;
 	t_player	player_cpy = *player;
 	player_cpy.game = &game_cpy;
-	game_cpy.move = move;
-	execute_move(&game_cpy, false);
+	execute_move(&game_cpy, move, false);
 	if (in_check(&player_cpy))
 	{
 		return (true);
@@ -370,39 +369,6 @@ void	get_all_possible_moves(t_player *player, t_move **ret_moves, size_t *ret_mo
 	}
 }
 
-//assumes aquired mutex for game
-t_move	get_rdm_move(t_player *player)
-{
-	t_move	*moves = NULL;
-	size_t	moves_count = 0;
-	get_all_possible_moves(player, &moves, &moves_count);
-	//debug logging------
-	for (int i = 0; i < moves_count; i++)
-	{
-		ASSUME(!player->game->board[moves[i].yn][moves[i].xn]
-			|| uncolor_piece(
-				player->game->board[moves[i].yn][moves[i].xn]) != KING);
-	}
-	//---------------
-	t_move	move = {0};
-	if (!moves_count)
-	{
-		if (in_check(player))
-		{
-			printf("player %s lost!\n", color_to_str(player->color));
-		}
-		else
-		{
-			printf("(%s turn:)draw!\n", color_to_str(player->color));
-		}
-		player_cleanup(player);
-		ASSUME(0);
-	}
-	move = moves[rand() % moves_count];
-	dyn_arr_free((void **)&moves);
-	return (move);
-}
-
 int	get_capture_piece_score(t_piece piece)
 {
 	t_uncolored_piece	uncol_piece = uncolor_piece(piece);
@@ -418,26 +384,27 @@ int	get_capture_piece_score(t_piece piece)
 	}
 }
 
-int	execute_move(t_game *game, bool print)
+int	execute_move(t_game *game, t_move move, bool print)
 {
-	t_move	move = game->move;
+	memcpy(game->all_boards + game->generate_turn, game->board, sizeof game->board);
 	t_piece	piece = game->board[move.yo][move.xo];
 	t_color	color = piece_color(piece);
 	t_uncolored_piece uncol_piece = uncolor_piece(piece);
 	int		score = 0;
 
+
 	t_piece	target = game->board[move.yn][move.xn];
 
-	//if (print)
-	//{
-	//	printf("%s is moving %d/%d(%s) to %d/%d(%s) (x/y)\n",
-	//			color_to_str(color),
-	//			move.xo, move.yo,
-	//			piece_to_str(piece),
-	//			move.xn, move.yn,
-	//			piece_to_str(target)
-	//	);
-	//}
+	if (print)
+	{
+		printf("%s is moving %d/%d(%s) to %d/%d(%s) (x/y)\n",
+				color_to_str(color),
+				move.xo, move.yo,
+				piece_to_str(piece),
+				move.xn, move.yn,
+				piece_to_str(target)
+		);
+	}
 	
 	// update new postion data structre
 	for (int i = 0; i < 16; i++)
@@ -509,8 +476,8 @@ void	*game_loop(void *player_data)
 		size_t	move_count = 0;
 
 		get_all_possible_moves(player, &moves, &move_count);
-		for (int i = 0; i < move_count; i++)
-			print_move(moves[i], player->game);
+		//for (int i = 0; i < move_count; i++)
+		//	print_move(moves[i], player->game);
 		if (!move_count)
 		{
 			pthread_mutex_lock(&player->game->mutex_eval);
@@ -527,16 +494,14 @@ void	*game_loop(void *player_data)
 			player_cleanup(player);
 			ASSUME(0);
 		}
-		t_move	move = select_move_neural_net(player, moves, move_count);
-		if (player->color == WHITE)
-			player->game->turn = BLACK;
-		else
-			player->game->turn = WHITE;
 		pthread_mutex_lock(&player->game->mutex_eval);
-		player->game->move = move;
+		size_t	turn = player->game->generate_turn;
+		player->game->moves[turn] = select_move_neural_net(player, moves, move_count);
+		player->game->moves[turn].score = execute_move(player->game, player->game->moves[turn], false);
+		player->game->turn = inverse_color(player->game->turn);
 		printf("generate_turn: %lu\n", player->game->generate_turn);
 		player->game->generate_turn++;
-		if (player->game->generate_turn > 1000)
+		if (player->game->generate_turn >= MAX_MOVES)
 		{
 			player->game->state = TIE;
 			pthread_mutex_unlock(&player->game->mutex_eval);

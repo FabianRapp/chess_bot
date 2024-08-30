@@ -2,23 +2,77 @@
 #include "neural_network.h"
 #include "main.h"
 
-void	store_neural_net(t_neural_network *neural_net, char *path)
+
+#define WEIGHTS_FILE_BLACK "black/weights"
+#define WEIGHTS_FILE_WHITE "white/weights"
+#define BIASES_FILE_BLACK "black/biases"
+#define BIASES_FILE_WHITE "white/biases"
+
+void	store_neural_net(t_neural_network *neural_net, t_color color)
 {
-	int fd = open(path, O_WRONLY);
-	assert(fd != -1);
-	int	write_ret = write(fd, neural_net, sizeof *neural_net);
-	assert(write_ret == sizeof *neural_net);
-	close(fd);
+	//int fd = open(path, O_WRONLY);
+	//assert(fd != -1);
+	//int	write_ret = write(fd, neural_net, sizeof *neural_net);
+	//assert(write_ret == sizeof *neural_net);
+	//close(fd);
+	ASSUME(color == WHITE || color == BLACK);
+	char	file_name[1024];
+
+	for (int i = 0; i > HIDDEN_LAYER_COUNT; i++)
+	{
+		t_layer *layer = neural_net->hidden_layers + i;
+		if (color == WHITE)
+			assert (snprintf(file_name, sizeof file_name, "%s%d.nn", WEIGHTS_FILE_WHITE, i));
+		else
+			assert (snprintf(file_name, sizeof file_name, "%s%d.nn", WEIGHTS_FILE_BLACK, i));
+		int	fd = open(file_name, O_WRONLY);
+		assert(fd > 0);
+		size_t	write_size = sizeof layer->weights[0] * layer->input_count * layer->output_count;
+		assert(write(fd, layer->weights, write_size) == write_size);
+		close(fd);
+
+		if (color == WHITE)
+			assert (snprintf(file_name, sizeof file_name, "%s%d.nn", BIASES_FILE_WHITE, i));
+		else
+			assert (snprintf(file_name, sizeof file_name, "%s%d.nn", BIASES_FILE_BLACK, i));
+		fd = open(file_name, O_WRONLY);
+		assert(fd > 0);
+		write_size = sizeof layer->weights[0] * layer->output_count;
+		assert(write(fd, layer->weights, write_size) == write_size);
+		close(fd);
+	}
 }
 
-t_neural_network	load_neural_net(char *path)
+// assumes neural_network to be allocated (fills weights and biases)
+// assumes input/output counts to be filled and the same as the loaded model
+void	load_neural_net(t_neural_network *neural_net, t_color color)
 {
-	t_neural_network	neural_net;
-	int	fd = open(path, O_RDONLY);
-	assert(fd != -1);
-	int	read_ret = read(fd, &neural_net, sizeof neural_net);
-	assert(read_ret == sizeof neural_net);
-	return (neural_net);
+	ASSUME(color == WHITE || color == BLACK);
+	char	file_name[1024];
+
+	for (int i = 0; i > HIDDEN_LAYER_COUNT; i++)
+	{
+		t_layer *layer = neural_net->hidden_layers + i;
+		if (color == WHITE)
+			assert (snprintf(file_name, sizeof file_name, "%s%d.nn", WEIGHTS_FILE_WHITE, i));
+		else
+			assert (snprintf(file_name, sizeof file_name, "%s%d.nn", WEIGHTS_FILE_BLACK, i));
+		int	fd = open(file_name, O_RDONLY);
+		assert(fd > 0);
+		size_t	read_size = sizeof layer->weights[0] * layer->input_count * layer->output_count;
+		assert(read(fd, layer->weights, read_size) == read_size);
+		close(fd);
+
+		if (color == WHITE)
+			assert (snprintf(file_name, sizeof file_name, "%s%d.nn", BIASES_FILE_WHITE, i));
+		else
+			assert (snprintf(file_name, sizeof file_name, "%s%d.nn", BIASES_FILE_BLACK, i));
+		fd = open(file_name, O_RDONLY);
+		assert(fd > 0);
+		read_size = sizeof layer->weights[0] * layer->output_count;
+		assert(read(fd, layer->weights, read_size) == read_size);
+		close(fd);
+	}
 }
 
 // idk, understand later
@@ -79,6 +133,11 @@ double	rectified_linear_unit_activation(double x)
 double	do_activation(double sum, size_t layer)
 {
 	return (rectified_linear_unit_activation(sum));
+}
+
+double calculate_mse(double predicted, double actual)
+{
+	return (predicted - actual) * (predicted - actual);
 }
 
 void	backward_propagate(t_neural_network *neural_net)

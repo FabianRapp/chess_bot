@@ -1,5 +1,5 @@
 CC=cc
-CFLAGS= -fsanitize=address -g -lm -I. -mavx2 -mfma
+CFLAGS= -fsanitize=undefined -g -lm -I. -mavx2 -mfma
 CFLAGS_FAST = -O3 -march=native -mavx2 -DNO_DEBUG=1 -lm -I. -mfma
 SRC = main.c \
 	utils1.c \

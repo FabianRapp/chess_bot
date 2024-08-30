@@ -35,8 +35,8 @@ typedef struct s_neural_network
 //public-----
 t_move				select_move_neural_net(t_player *player, t_move *moves, size_t move_count);
 void				init_neural_net(t_neural_network *neural_net);
-void				store_neural_net(t_neural_network *neural_net, char *path);
-t_neural_network	load_neural_net(char *path);
+void				store_neural_net(t_neural_network *neural_net, t_color color);
+void				load_neural_net(t_neural_network *neural_net, t_color color);
 
 // priveate
 void	eval_board(const t_piece board[HEIGHT][WIDTH],

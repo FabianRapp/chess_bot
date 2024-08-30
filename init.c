@@ -31,6 +31,7 @@ int	init(t_manager *manager)
 		manager->white_players[i].game = manager->games + i;
 		init_neural_net(&(manager->black_players[i].neural_net));
 		init_neural_net(&(manager->white_players[i].neural_net));
+		//manager->black_players[i].neural_net = load_neural_net("BLACK.NN");
 		pthread_mutex_init(&manager->games[i].mutex, NULL);
 		pthread_cond_init(&manager->games[i].turn_over, NULL);
 		pthread_mutex_init(&manager->games[i].mutex_eval, NULL);
