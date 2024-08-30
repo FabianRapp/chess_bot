@@ -66,7 +66,6 @@ void	get_scores(t_game *game, double *score_b, double *score_w)
 		{
 			*score_w += move_progress_score(game->moves[i].score, result, progress, WHITE);;
 		}
-		printf("scoreb: %lf; scorew: %lf\n", *score_b, *score_w);
 	}
 }
 
@@ -157,7 +156,7 @@ int	main(void)
 		for (int j = 0; j < game->generate_turn; j++)
 		{
 			if (game->moves[j].score)
-				printf("score: %d\n", game->moves[j].score);
+				printf("score: %lf\n", game->moves[j].score);
 		}
 		game->state = results[i];
 		get_scores(game, &black_score, &white_score);

@@ -18,14 +18,14 @@ void	store_neural_net(t_neural_network *neural_net, t_color color)
 	ASSUME(color == WHITE || color == BLACK);
 	char	file_name[1024];
 
-	for (int i = 0; i > HIDDEN_LAYER_COUNT; i++)
+	for (int i = 0; i < HIDDEN_LAYER_COUNT; i++)
 	{
 		t_layer *layer = neural_net->hidden_layers + i;
 		if (color == WHITE)
 			assert (snprintf(file_name, sizeof file_name, "%s%d.nn", WEIGHTS_FILE_WHITE, i));
 		else
 			assert (snprintf(file_name, sizeof file_name, "%s%d.nn", WEIGHTS_FILE_BLACK, i));
-		int	fd = open(file_name, O_WRONLY);
+		int	fd = open(file_name, O_WRONLY | O_TRUNC | O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
 		assert(fd > 0);
 		size_t	write_size = sizeof layer->weights[0] * layer->input_count * layer->output_count;
 		assert(write(fd, layer->weights, write_size) == write_size);
@@ -35,12 +35,13 @@ void	store_neural_net(t_neural_network *neural_net, t_color color)
 			assert (snprintf(file_name, sizeof file_name, "%s%d.nn", BIASES_FILE_WHITE, i));
 		else
 			assert (snprintf(file_name, sizeof file_name, "%s%d.nn", BIASES_FILE_BLACK, i));
-		fd = open(file_name, O_WRONLY);
+		fd = open(file_name, O_WRONLY | O_TRUNC | O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
 		assert(fd > 0);
 		write_size = sizeof layer->weights[0] * layer->output_count;
 		assert(write(fd, layer->weights, write_size) == write_size);
 		close(fd);
 	}
+	printf("nn stored\n");
 }
 
 // assumes neural_network to be allocated (fills weights and biases)
@@ -50,7 +51,7 @@ void	load_neural_net(t_neural_network *neural_net, t_color color)
 	ASSUME(color == WHITE || color == BLACK);
 	char	file_name[1024];
 
-	for (int i = 0; i > HIDDEN_LAYER_COUNT; i++)
+	for (int i = 0; i < HIDDEN_LAYER_COUNT; i++)
 	{
 		t_layer *layer = neural_net->hidden_layers + i;
 		if (color == WHITE)
@@ -58,6 +59,7 @@ void	load_neural_net(t_neural_network *neural_net, t_color color)
 		else
 			assert (snprintf(file_name, sizeof file_name, "%s%d.nn", WEIGHTS_FILE_BLACK, i));
 		int	fd = open(file_name, O_RDONLY);
+		printf("%s\n", strerror(errno));
 		assert(fd > 0);
 		size_t	read_size = sizeof layer->weights[0] * layer->input_count * layer->output_count;
 		assert(read(fd, layer->weights, read_size) == read_size);
@@ -73,6 +75,7 @@ void	load_neural_net(t_neural_network *neural_net, t_color color)
 		assert(read(fd, layer->weights, read_size) == read_size);
 		close(fd);
 	}
+	printf("nn loaded\n");
 }
 
 // idk, understand later

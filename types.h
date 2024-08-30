@@ -48,7 +48,7 @@ typedef struct s_move
 	int8_t	yo;//y old
 	int8_t	xn;//x new
 	int8_t	yn;//y new
-	int		score;
+	double	score;
 }	t_move;
 
 #endif //TYPES_H
